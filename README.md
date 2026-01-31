@@ -1,5 +1,27 @@
 # Anti-Lazy / Anti-Amnesia Orchestrator — Hackathon Roadmap
 
+## What it does
+
+This project wraps an LLM in a deterministic pipeline that forces retrieval, applies
+mistake-memory rules, and logs every run so judges can inspect grounding and improvement
+over time.
+
+## How to run
+
+```bash
+PYTHONPATH=src python -m anti_lazy run "Explain how the orchestrator enforces retrieval"
+PYTHONPATH=src python -m anti_lazy feedback "*" "api-answers" "Always cite at least one snippet_id."
+```
+
+Artifacts are written to `data/runs.jsonl` and `data/mistakes.jsonl`.
+
+## Demo steps
+
+1. Run a task that should use local docs.
+2. Inspect `data/runs.jsonl` for tools called and snippet usage.
+3. Add a correction rule with `feedback`.
+4. Re-run the task to see the rule applied and snippet IDs cited.
+
 ## Goal
 
 Build a deterministic multi-agent wrapper around an LLM that:

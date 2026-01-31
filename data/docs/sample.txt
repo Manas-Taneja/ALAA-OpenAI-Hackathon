@@ -1,0 +1,4 @@
+The orchestrator enforces retrieval before any answer is produced. It always calls the
+local docs search tool, stores the snippets in a context pack, and requires at least one
+snippet ID to be cited in the final response. Mistake rules are stored in JSONL and applied
+whenever a query matches the rule's domain or intent.

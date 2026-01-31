@@ -1,0 +1,65 @@
+from __future__ import annotations
+
+import json
+from dataclasses import asdict
+from pathlib import Path
+from typing import Iterable, List
+
+from .schemas import Rule, utc_now
+
+
+class MistakeMemory:
+    def __init__(self, storage_path: Path) -> None:
+        self.storage_path = storage_path
+        self.storage_path.parent.mkdir(parents=True, exist_ok=True)
+        if not self.storage_path.exists():
+            self.storage_path.write_text("", encoding="utf-8")
+
+    def add_rule(
+        self,
+        domain: str,
+        intent: str,
+        instruction: str,
+        severity: str = "medium",
+    ) -> Rule:
+        rule = Rule(
+            rule_id=f"rule-{self._next_id()}",
+            domain=domain,
+            intent=intent,
+            instruction=instruction,
+            severity=severity,
+            created_at=utc_now(),
+        )
+        with self.storage_path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(asdict(rule)) + "\n")
+        return rule
+
+    def get_applicable_rules(self, task: str) -> List[Rule]:
+        rules = list(self._load_rules())
+        return [rule for rule in rules if self._matches(rule, task)]
+
+    def _load_rules(self) -> Iterable[Rule]:
+        with self.storage_path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line:
+                    continue
+                payload = json.loads(line)
+                yield Rule(**payload)
+
+    def _matches(self, rule: Rule, task: str) -> bool:
+        lowered = task.lower()
+        return (
+            rule.domain == "*"
+            or rule.intent == "*"
+            or rule.domain.lower() in lowered
+            or rule.intent.lower() in lowered
+        )
+
+    def _next_id(self) -> int:
+        count = 0
+        with self.storage_path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                if line.strip():
+                    count += 1
+        return count + 1
