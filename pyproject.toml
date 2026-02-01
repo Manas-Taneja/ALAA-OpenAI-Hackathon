@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Deterministic multi-agent wrapper to enforce retrieval and remember mistakes."
 readme = "README.md"
 requires-python = ">=3.10"
+dependencies = ["openai>=1.0.0", "python-dotenv>=1.0.0"]
 
 [project.scripts]
 anti-lazy = "anti_lazy.main:main"

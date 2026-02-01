@@ -19,6 +19,28 @@ $env:PYTHONPATH="src"; python -m anti_lazy run "Explain how the orchestrator enf
 $env:PYTHONPATH="src"; python -m anti_lazy feedback "*" "api-answers" "Always cite at least one snippet_id."
 ```
 
+## OpenAI setup (optional wow factor)
+
+Install the SDK:
+```bash
+python -m pip install python-dotenv
+```
+
+Install the SDK:
+```bash
+python -m pip install openai
+```
+
+Set the API key:
+```powershell
+$env:OPENAI_API_KEY="your-key-here"
+```
+
+Optional model override:
+```powershell
+$env:OPENAI_MODEL="gpt-4.1"
+```
+
 Artifacts are written to `data/runs.jsonl` and `data/mistakes.jsonl`.
 
 ## Demo steps
