@@ -1,4 +1,4 @@
-# Anti-Lazy / Anti-Amnesia Orchestrator — Hackathon Roadmap
+# Anti-Lazy / Anti-Amnesia Orchestrator -- Hackathon Ready
 
 ## What it does
 
@@ -6,7 +6,7 @@ This project wraps an LLM in a deterministic pipeline that forces retrieval, app
 mistake-memory rules, and logs every run so judges can inspect grounding and improvement
 over time.
 
-## How to run
+## Quick start (CLI)
 
 ```bash
 PYTHONPATH=src python -m anti_lazy run "Explain how the orchestrator enforces retrieval"
@@ -19,11 +19,32 @@ PowerShell:
 ```powershell
 $env:PYTHONPATH="src"; python -m anti_lazy run "Explain how the orchestrator enforces retrieval"
 $env:PYTHONPATH="src"; python -m anti_lazy feedback "*" "api-answers" "Always cite at least one snippet_id."
+$env:PYTHONPATH="src"; python -m anti_lazy metrics
+$env:PYTHONPATH="src"; python -m anti_lazy web --port 8000
 ```
 
-## OpenAI setup (optional wow factor)
+Artifacts are written to `data/runs.jsonl` and `data/mistakes.jsonl`.
 
-Install the SDK:
+## Web dashboard (hackathon wow)
+
+Start the dashboard:
+```powershell
+$env:PYTHONPATH="src"; python -m anti_lazy web --host 127.0.0.1 --port 8000
+```
+
+Open:
+```
+http://127.0.0.1:8000
+```
+
+Features:
+- Run trace drawer (click any run)
+- Filters by task type and rule id
+- Summary metrics + recent runs/mistakes
+
+## OpenAI setup (optional)
+
+Install dotenv:
 ```bash
 python -m pip install python-dotenv
 ```
@@ -43,35 +64,41 @@ Optional model override:
 $env:OPENAI_MODEL="gpt-4.1"
 ```
 
-Artifacts are written to `data/runs.jsonl` and `data/mistakes.jsonl`.
+If the key is set, the Answer Agent uses the LLM; otherwise it falls back to the
+deterministic response path.
 
-## Demo steps
+## Hackathon demo flow (2 minutes)
 
-1. Run a task that should use local docs.
-2. Inspect `data/runs.jsonl` for tools called and snippet usage.
+1. Run a task to produce a grounded answer + trace.
+2. Open the web dashboard and click the newest run to show the trace.
 3. Add a correction rule with `feedback`.
-4. Re-run the task to see the rule applied and snippet IDs cited.
+4. Re-run the task to show `applied_rules` + rewrite loop in the trace.
 
-## Scripted demo (Phase 5)
+## Scripted demo
 
 Run the scripted before/after demo:
 ```powershell
 .\scripts\demo.ps1
 ```
 
+Use `-Reset` to run with a clean mistakes file and restore it afterward:
+```powershell
+.\scripts\demo.ps1 -Reset
+```
+
 This shows a run without a scoped rule, adds a rule, then re-runs to show
-`applied_rules` in the JSON output and the latest log entry.
+`applied_rules` and the trace in the latest log entry.
 
 ## Goal
 
 Build a deterministic multi-agent wrapper around an LLM that:
 
-1) Forces retrieval before answering (anti-laziness)  
-2) Learns from corrections and changes future behavior (anti-amnesia)  
-3) Logs every step so judges can inspect what happened  
-4) Demonstrates improvement across runs  
+1) Forces retrieval before answering (anti-laziness)
+2) Learns from corrections and changes future behavior (anti-amnesia)
+3) Logs every step so judges can inspect what happened
+4) Demonstrates improvement across runs
 
-This is not about training a model.  
+This is not about training a model.
 It is about enforcing behavior through orchestration, retrieval, rules, and verification.
 
 ---
@@ -108,6 +135,7 @@ flowchart LR
     MM -->|rules| AA
     IS -->|ContextPack| AA
 ```
+
 ## Deterministic Pipeline
 
 Every run:
@@ -146,36 +174,25 @@ sequenceDiagram
 ```
 
 ## Deliverables by End of Hackathon
+
 ### Must-Have
 
 <li>Orchestrator with fixed state machine
-
 <li>Info-Seeker with mandatory retrieval
-
 <li>ContextPack abstraction
-
 <li>Answer Agent that must cite snippets
-
 <li>Mistake-Memory with scoped rules
-
 <li>One rewrite-on-failure verifier
-
 <li>JSONL logging
-
 <li>CLI or minimal web UI
-
 <li>One scripted demo scenario
 
 ### Nice-to-Have
 
 <li>Code search tool
-
 <li>Metrics table
-
 <li>Minimal web viewer
-
 <li>Embedding similarity
-
 <li>Visualization of mistake statistics
 
 The code search tool now scans repository source files alongside local docs. Metrics can be
@@ -183,6 +200,7 @@ reviewed with the `metrics` CLI command, and a lightweight web dashboard is avai
 `python -m anti_lazy web` for a quick view of runs and mistake statistics.
 
 ## Modules
+
 ```mermaid
 graph TD
 main[CLI / UI] --> orchestrator
@@ -199,128 +217,99 @@ info_seeker --> tools_code_search
 mistake_memory --> mistakes_db[(mistakes.jsonl)]
 logger --> runs_db[(runs.jsonl)]
 ```
+
 # Phase Plan (1.5 Days)
-## Phase 0 — Repo + Skeleton (1–2h)
+
+## Phase 0 -- Repo + Skeleton (1-2h)
 
 <li>Create module layout
-
 <li>Add data directory
-
 <li>Stub LLM client
-
 <li>Define schemas
-
 <li>Create empty docs corpus
 
 ### Exit criteria:
     run_task("hello") executes full pipeline and logs JSON.
 
-## Phase 1 — Orchestrator + Info-Seeker (3–4h)
+## Phase 1 -- Orchestrator + Info-Seeker (3-4h)
 
 <li>Deterministic classification
-
 <li>Required tool checklist
-
 <li>Local docs search
-
 <li>Tool coverage logging
 
 ### Exit criteria:
     CLI prints task type, tools called, snippet count.
 
-## Phase 2 — Answer Agent + Grounding Enforcement (3–4h)
+## Phase 2 -- Answer Agent + Grounding Enforcement (3-4h)
 
 <li>Prompt builder with rules + snippets
-
 <li>Structured JSON output
-
 <li>Require used_snippet_ids
-
 <li>Clarifying questions when no context
 
 ### Exit criteria:
     Answers include snippet IDs or say no context found.
 
-## Phase 3 — Mistake Memory (3–4h)
+## Phase 3 -- Mistake Memory (3-4h)
 
 <li>Feedback CLI command
-
 <li>JSONL storage
-
 <li>Scoped retrieval
-
 <li>Severity levels
-
 <li>Conflict suppression
 
 ### Exit criteria:
     Second run shows rule applied.
 
-## Phase 4 — Verifier + Rewrite Loop (2–3h)
+## Phase 4 -- Verifier + Rewrite Loop (2-3h)
 
 <li>Detect snippet misuse
-
 <li>One rewrite pass
-
 <li>Log both attempts
 
 ### Exit criteria:
     Auto-correct triggers when grounding fails.
 
-## Phase 5 — Demo Scenario + Polish (2–3h)
+## Phase 5 -- Demo Scenario + Polish (2-3h)
 
 <li>Script first-fail/second-pass
-
 <li>README pitch
-
 <li>Screenshots / terminal capture
 
 ### Exit criteria:
     5-minute demo with visible improvement.
 
 ## Metrics to Surface
+
 ### Anti-Lazy
 
 <li>required_tools
-
 <li>tools_called
-
 <li>tool_coverage
-
 <li>snippets_count
-
 <li>used_snippet_ids count
 
 ### Anti-Amnesia
 
 <li>rules_applied
-
 <li>times_triggered
-
 <li>post_fix_success
 
 ## Demo Script
 
 1. Ask an API question
-
 2. Model ignores docs
-
 3. Show run log
-
 4. Add correction rule
-
 5. Re-run
-
 6. Show rule applied + snippet usage
 
 ## What We Explicitly Cut
 
 <li>Universal domain claims
-
 <li>Model training
-
 <li>Fancy dashboards
-
 <li>Embeddings unless time allows
 
 ---
@@ -334,9 +323,6 @@ logger --> runs_db[(runs.jsonl)]
 Mistake rules written as reusable business logic:
 
 <li>When summarizing tickets, group by theme.
-
 <li>When generating actions, assign owner + due date.
-
 <li>When answering APIs, always cite docs.
-
 <li>Over time this becomes a Business Logic Memory Layer.
