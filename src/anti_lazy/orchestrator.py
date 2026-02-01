@@ -22,10 +22,16 @@ class Orchestrator:
 
     def run_task(self, task: str) -> RunResult:
         task_type = self._classify_task(task)
+        trace: List[dict] = []
+        trace.append({"stage": "classify", "task_type": task_type})
         rules = self.mistake_memory.get_applicable_rules(task)
+        trace.append({"stage": "rules", "count": len(rules), "rule_ids": [rule.rule_id for rule in rules]})
         context_pack = self.info_seeker.build_context_pack(task)
+        trace.append({"stage": "retrieve", "tools_called": context_pack.tools_called, "snippets_count": len(context_pack.snippets)})
         draft = self.answer_agent.answer(task, rules, context_pack)
+        trace.append({"stage": "draft", "used_snippet_ids": draft.used_snippet_ids})
         verification = self.verifier.verify(draft, context_pack.snippets)
+        trace.append({"stage": "verify", "ok": verification.ok, "reason": verification.reason})
         attempts = [
             {
                 "used_snippet_ids": draft.used_snippet_ids,
@@ -45,6 +51,8 @@ class Orchestrator:
                 enforce_snippet_usage=True,
             )
             verification = self.verifier.verify(draft, context_pack.snippets)
+            trace.append({"stage": "rewrite", "used_snippet_ids": draft.used_snippet_ids, "ok": verification.ok, "reason": verification.reason})
+        trace.append({"stage": "verify", "ok": verification.ok, "reason": verification.reason})
             attempts.append(
                 {
                     "used_snippet_ids": draft.used_snippet_ids,
@@ -65,6 +73,7 @@ class Orchestrator:
             draft=draft,
             verification=verification,
             attempts=attempts,
+            trace=trace,
             snippets_count=len(context_pack.snippets),
         )
         return RunResult(
@@ -72,6 +81,7 @@ class Orchestrator:
             task_type=task_type,
             tools_called=context_pack.tools_called,
             snippets_count=len(context_pack.snippets),
+            trace=trace,
         )
 
     def _log_run(
@@ -84,6 +94,7 @@ class Orchestrator:
         draft: DraftAnswer,
         verification: VerificationResult,
         attempts: List[dict],
+        trace: List[dict],
         snippets_count: int,
     ) -> None:
         required_count = len(required_tools)
@@ -102,6 +113,7 @@ class Orchestrator:
             snippets_count=snippets_count,
             used_snippet_ids=draft.used_snippet_ids,
             attempts=attempts,
+            trace=trace,
             verification={
                 "ok": verification.ok,
                 "reason": verification.reason,

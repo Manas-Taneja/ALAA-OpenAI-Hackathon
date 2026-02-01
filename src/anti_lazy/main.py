@@ -36,6 +36,9 @@ def cmd_run(args: argparse.Namespace) -> None:
     print(f"Task type: {result.task_type}")
     print(f"Tools called: {', '.join(result.tools_called)}")
     print(f"Snippets found: {result.snippets_count}")
+    print("\n=== TRACE ===")
+    for event in result.trace:
+        print(event)
     print("\n=== FINAL ANSWER ===")
     print(result.draft.answer)
     if result.draft.used_snippet_ids:

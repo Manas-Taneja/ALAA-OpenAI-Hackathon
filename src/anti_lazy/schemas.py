@@ -58,6 +58,7 @@ class RunResult:
     task_type: str
     tools_called: List[str]
     snippets_count: int
+    trace: List[Dict[str, Any]]
 
 
 @dataclass(frozen=True)
@@ -73,6 +74,7 @@ class RunLog:
     snippets_count: int
     used_snippet_ids: List[str]
     attempts: List[Dict[str, Any]]
+    trace: List[Dict[str, Any]]
     verification: Dict[str, Any]
 
     def to_json(self) -> Dict[str, Any]:
