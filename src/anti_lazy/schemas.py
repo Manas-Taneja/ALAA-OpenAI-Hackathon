@@ -72,6 +72,7 @@ class RunLog:
     tool_coverage: float
     snippets_count: int
     used_snippet_ids: List[str]
+    attempts: List[Dict[str, Any]]
     verification: Dict[str, Any]
 
     def to_json(self) -> Dict[str, Any]:

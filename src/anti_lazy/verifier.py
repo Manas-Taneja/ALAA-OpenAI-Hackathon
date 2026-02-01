@@ -9,6 +9,12 @@ from .schemas import DraftAnswer, Snippet, VerificationResult
 @dataclass
 class Verifier:
     def verify(self, draft: DraftAnswer, snippets: List[Snippet]) -> VerificationResult:
+        if draft.payload.used_snippet_ids != draft.used_snippet_ids:
+            return VerificationResult(
+                ok=False,
+                reason="Payload used_snippet_ids do not match draft used_snippet_ids.",
+                rewrite_instruction="Ensure payload used_snippet_ids match the draft.",
+            )
         if not snippets and draft.used_snippet_ids:
             return VerificationResult(
                 ok=False,

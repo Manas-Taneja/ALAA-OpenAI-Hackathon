@@ -40,7 +40,7 @@ class MistakeMemory:
         return [rule for rule in rules if self._matches(rule, task)]
 
     def _load_rules(self) -> Iterable[Rule]:
-        with self.storage_path.open("r", encoding="utf-8") as handle:
+        with self.storage_path.open("r", encoding="utf-8-sig") as handle:
             for line in handle:
                 line = line.strip()
                 if not line:
@@ -62,8 +62,26 @@ class MistakeMemory:
         latest_by_scope: dict[tuple[str, str], Rule] = {}
         for rule in rules:
             key = (rule.domain, rule.intent)
-            latest_by_scope[key] = rule
+            existing = latest_by_scope.get(key)
+            if existing is None:
+                latest_by_scope[key] = rule
+                continue
+            if MistakeMemory._compare_rules(rule, existing) >= 0:
+                latest_by_scope[key] = rule
         return list(latest_by_scope.values())
+
+    @staticmethod
+    def _compare_rules(left: Rule, right: Rule) -> int:
+        left_rank = MistakeMemory._severity_rank(left.severity)
+        right_rank = MistakeMemory._severity_rank(right.severity)
+        if left_rank != right_rank:
+            return left_rank - right_rank
+        return 1
+
+    @staticmethod
+    def _severity_rank(severity: str) -> int:
+        mapping = {"low": 0, "medium": 1, "high": 2}
+        return mapping.get(severity, 0)
 
     def _next_id(self) -> int:
         count = 0

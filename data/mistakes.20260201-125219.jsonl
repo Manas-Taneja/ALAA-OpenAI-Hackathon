@@ -1,0 +1,9 @@
+{"rule_id": "rule-1", "domain": "api-answers", "intent": "*", "instruction": "Always cite at least one snippet_id.", "severity": "high", "created_at": "2026-02-01T07:08:32.470695Z"}
+{"rule_id": "rule-2", "domain": "api-answers", "intent": "*", "instruction": "Cite two snippet_ids when available.", "severity": "medium", "created_at": "2026-02-01T07:08:32.549902Z"}
+{"rule_id": "rule-3", "domain": "api-answers", "intent": "*", "instruction": "Always cite at least one snippet_id.", "severity": "high", "created_at": "2026-02-01T07:12:02.666738Z"}
+{"rule_id": "rule-4", "domain": "api-answers", "intent": "*", "instruction": "Cite two snippet_ids when available.", "severity": "medium", "created_at": "2026-02-01T07:12:02.744427Z"}
+{"rule_id": "rule-5", "domain": "api-answers", "intent": "*", "instruction": "Low severity rule", "severity": "low", "created_at": "2026-02-01T07:15:34.231074Z"}
+{"rule_id": "rule-6", "domain": "api-answers", "intent": "*", "instruction": "High severity rule", "severity": "high", "created_at": "2026-02-01T07:15:34.310647Z"}
+{"rule_id": "rule-7", "domain": "api-answers", "intent": "*", "instruction": "Low severity rule", "severity": "low", "created_at": "2026-02-01T07:15:43.335095Z"}
+{"rule_id": "rule-8", "domain": "api-answers", "intent": "*", "instruction": "High severity rule", "severity": "high", "created_at": "2026-02-01T07:15:43.402447Z"}
+{"rule_id": "rule-9", "domain": "api-answers", "intent": "*", "instruction": "Always cite at least one snippet_id.", "severity": "high", "created_at": "2026-02-01T07:20:28.306411Z"}

@@ -13,6 +13,12 @@ PYTHONPATH=src python -m anti_lazy run "Explain how the orchestrator enforces re
 PYTHONPATH=src python -m anti_lazy feedback "*" "api-answers" "Always cite at least one snippet_id."
 ```
 
+PowerShell:
+```powershell
+$env:PYTHONPATH="src"; python -m anti_lazy run "Explain how the orchestrator enforces retrieval"
+$env:PYTHONPATH="src"; python -m anti_lazy feedback "*" "api-answers" "Always cite at least one snippet_id."
+```
+
 Artifacts are written to `data/runs.jsonl` and `data/mistakes.jsonl`.
 
 ## Demo steps
@@ -21,6 +27,16 @@ Artifacts are written to `data/runs.jsonl` and `data/mistakes.jsonl`.
 2. Inspect `data/runs.jsonl` for tools called and snippet usage.
 3. Add a correction rule with `feedback`.
 4. Re-run the task to see the rule applied and snippet IDs cited.
+
+## Scripted demo (Phase 5)
+
+Run the scripted before/after demo:
+```powershell
+.\scripts\demo.ps1
+```
+
+This shows a run without a scoped rule, adds a rule, then re-runs to show
+`applied_rules` in the JSON output and the latest log entry.
 
 ## Goal
 

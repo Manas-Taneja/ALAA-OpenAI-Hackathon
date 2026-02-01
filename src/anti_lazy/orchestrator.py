@@ -26,6 +26,16 @@ class Orchestrator:
         context_pack = self.info_seeker.build_context_pack(task)
         draft = self.answer_agent.answer(task, rules, context_pack)
         verification = self.verifier.verify(draft, context_pack.snippets)
+        attempts = [
+            {
+                "used_snippet_ids": draft.used_snippet_ids,
+                "verification": {
+                    "ok": verification.ok,
+                    "reason": verification.reason,
+                },
+                "rewrite_instruction": verification.rewrite_instruction,
+            }
+        ]
 
         if not verification.ok and verification.rewrite_instruction:
             draft = self.answer_agent.answer(
@@ -35,6 +45,16 @@ class Orchestrator:
                 enforce_snippet_usage=True,
             )
             verification = self.verifier.verify(draft, context_pack.snippets)
+            attempts.append(
+                {
+                    "used_snippet_ids": draft.used_snippet_ids,
+                    "verification": {
+                        "ok": verification.ok,
+                        "reason": verification.reason,
+                    },
+                    "rewrite_instruction": verification.rewrite_instruction,
+                }
+            )
 
         self._log_run(
             task=task,
@@ -44,6 +64,7 @@ class Orchestrator:
             tools_called=context_pack.tools_called,
             draft=draft,
             verification=verification,
+            attempts=attempts,
             snippets_count=len(context_pack.snippets),
         )
         return RunResult(
@@ -62,6 +83,7 @@ class Orchestrator:
         tools_called: List[str],
         draft: DraftAnswer,
         verification: VerificationResult,
+        attempts: List[dict],
         snippets_count: int,
     ) -> None:
         required_count = len(required_tools)
@@ -79,6 +101,7 @@ class Orchestrator:
             tool_coverage=tool_coverage,
             snippets_count=snippets_count,
             used_snippet_ids=draft.used_snippet_ids,
+            attempts=attempts,
             verification={
                 "ok": verification.ok,
                 "reason": verification.reason,
