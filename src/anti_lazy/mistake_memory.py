@@ -36,6 +36,7 @@ class MistakeMemory:
 
     def get_applicable_rules(self, task: str) -> List[Rule]:
         rules = list(self._load_rules())
+        rules = self._suppress_conflicts(rules)
         return [rule for rule in rules if self._matches(rule, task)]
 
     def _load_rules(self) -> Iterable[Rule]:
@@ -55,6 +56,14 @@ class MistakeMemory:
             or rule.domain.lower() in lowered
             or rule.intent.lower() in lowered
         )
+
+    @staticmethod
+    def _suppress_conflicts(rules: Iterable[Rule]) -> List[Rule]:
+        latest_by_scope: dict[tuple[str, str], Rule] = {}
+        for rule in rules:
+            key = (rule.domain, rule.intent)
+            latest_by_scope[key] = rule
+        return list(latest_by_scope.values())
 
     def _next_id(self) -> int:
         count = 0

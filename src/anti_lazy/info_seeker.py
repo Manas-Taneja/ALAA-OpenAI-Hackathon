@@ -13,5 +13,11 @@ class InfoSeeker:
 
     def build_context_pack(self, query: str) -> ContextPack:
         snippets = self.docs_tool.search(query)
+        required_tools: List[str] = ["local_docs"]
         tools_called: List[str] = ["local_docs"]
-        return ContextPack(query=query, snippets=snippets, tools_called=tools_called)
+        return ContextPack(
+            query=query,
+            snippets=snippets,
+            required_tools=required_tools,
+            tools_called=tools_called,
+        )

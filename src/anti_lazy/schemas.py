@@ -16,6 +16,7 @@ class Snippet:
 class ContextPack:
     query: str
     snippets: List[Snippet]
+    required_tools: List[str]
     tools_called: List[str]
 
 
@@ -33,6 +34,7 @@ class Rule:
 class DraftAnswer:
     answer: str
     used_snippet_ids: List[str]
+    payload: "AnswerPayload"
     notes: Optional[str] = None
 
 
@@ -44,12 +46,30 @@ class VerificationResult:
 
 
 @dataclass(frozen=True)
+class AnswerPayload:
+    response: str
+    used_snippet_ids: List[str]
+    applied_rules: List[str]
+
+
+@dataclass
+class RunResult:
+    draft: DraftAnswer
+    task_type: str
+    tools_called: List[str]
+    snippets_count: int
+
+
+@dataclass(frozen=True)
 class RunLog:
     run_id: str
     task: str
+    task_type: str
     timestamp: str
     rules_applied: List[str]
+    required_tools: List[str]
     tools_called: List[str]
+    tool_coverage: float
     snippets_count: int
     used_snippet_ids: List[str]
     verification: Dict[str, Any]

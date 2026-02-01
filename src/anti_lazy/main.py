@@ -31,11 +31,15 @@ def build_orchestrator() -> Orchestrator:
 
 def cmd_run(args: argparse.Namespace) -> None:
     orchestrator = build_orchestrator()
-    draft = orchestrator.run_task(args.task)
+    result = orchestrator.run_task(args.task)
+    print("=== RUN SUMMARY ===")
+    print(f"Task type: {result.task_type}")
+    print(f"Tools called: {', '.join(result.tools_called)}")
+    print(f"Snippets found: {result.snippets_count}")
     print("\n=== FINAL ANSWER ===")
-    print(draft.answer)
-    if draft.used_snippet_ids:
-        print(f"\nUsed snippet IDs: {', '.join(draft.used_snippet_ids)}")
+    print(result.draft.answer)
+    if result.draft.used_snippet_ids:
+        print(f"\nUsed snippet IDs: {', '.join(result.draft.used_snippet_ids)}")
 
 
 def cmd_feedback(args: argparse.Namespace) -> None:
