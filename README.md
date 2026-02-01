@@ -11,6 +11,8 @@ over time.
 ```bash
 PYTHONPATH=src python -m anti_lazy run "Explain how the orchestrator enforces retrieval"
 PYTHONPATH=src python -m anti_lazy feedback "*" "api-answers" "Always cite at least one snippet_id."
+PYTHONPATH=src python -m anti_lazy metrics
+PYTHONPATH=src python -m anti_lazy web --port 8000
 ```
 
 PowerShell:
@@ -153,6 +155,10 @@ sequenceDiagram
 <li>Embedding similarity
 
 <li>Visualization of mistake statistics
+
+The code search tool now scans repository source files alongside local docs. Metrics can be
+reviewed with the `metrics` CLI command, and a lightweight web dashboard is available via
+`python -m anti_lazy web` for a quick view of runs and mistake statistics.
 
 ## Modules
 ```mermaid
